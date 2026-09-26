@@ -97,4 +97,24 @@
     lightboxImage.removeAttribute('src');
     lightboxImage.alt = '';
   });
+
+  const visitorCount = document.querySelector('#visitor-count');
+  const localHosts = new Set(['', 'localhost', '127.0.0.1']);
+  if (localHosts.has(location.hostname)) {
+    visitorCount.textContent = 'Preview';
+  } else {
+    fetch('https://counterapi.com/api/immabadliar.github.io/view/my-port?unique=true')
+      .then(response => {
+        if (!response.ok) throw new Error('Counter request failed');
+        return response.json();
+      })
+      .then(data => {
+        const value = Number(data.value);
+        visitorCount.textContent = Number.isFinite(value) ? value.toLocaleString() : '—';
+      })
+      .catch(() => {
+        visitorCount.textContent = '—';
+        visitorCount.setAttribute('aria-label', 'Visitor count temporarily unavailable');
+      });
+  }
 })();
